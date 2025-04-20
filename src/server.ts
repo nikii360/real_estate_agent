@@ -17,25 +17,15 @@ const client = new ElevenLabsClient({
 
 fastify.post('/start-call', async (req, reply) => {
   try {
+    const body = req.body as any;
+
     const response = await client.conversationalAi.twilioOutboundCall({
-      agent_id: '606kCnF7n0yQevgo8Nte',
-      agent_phone_number_id: 'ZAErUDT6eQgMjNgiabmK',
-      to_number: '+919667834137',
-      conversation_initiation_client_data: {
-        conversation_config_override: {
-          agent: {
-            language: 'English',
-          },
-        },
-        dynamic_variables: {
-          user_name: 'Nikhil Pavanan',
-          available_time: new Date().toISOString(),
-          user_available: false,
-          email_address: 'nikhil.pavanan@gmail.com',
-        },
-      },
+      agent_id: body.agent_id,
+      agent_phone_number_id: body.agent_phone_number_id,
+      to_number: body.to_number,
+      conversation_initiation_client_data: body.conversation_initiation_client_data,
     });
-    
+
     console.log("Twilio Response: ", response);
     reply.send({ success: true, response });
   } catch (error) {
