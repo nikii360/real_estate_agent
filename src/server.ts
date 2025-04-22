@@ -4,7 +4,12 @@ import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { config } from 'dotenv';
 import { ElevenLabsClient } from 'elevenlabs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 config(); // Load env vars
 
 const fastify = Fastify({ logger: true });
