@@ -1,11 +1,19 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import fastifyStatic from '@fastify/static';
+import path from 'path';
 import { config } from 'dotenv';
 import { ElevenLabsClient } from 'elevenlabs';
 
 config(); // Load env vars
 
 const fastify = Fastify({ logger: true });
+
+// 🔥 Serve static files from /public
+await fastify.register(fastifyStatic, {
+  root: path.join(__dirname, '../public'),
+  prefix: '/', // means /index.html will be available at /
+});
 
 await fastify.register(cors, {
   origin: '*', // tighten in production
