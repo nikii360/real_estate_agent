@@ -16,7 +16,7 @@ const fastify = Fastify({ logger: true });
 
 // 🔥 Serve static files from /public
 await fastify.register(fastifyStatic, {
-  root: path.join(__dirname, '../public'),
+  root: path.join(__dirname, 'public'),
   prefix: '/', // means /index.html will be available at /
 });
 
