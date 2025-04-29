@@ -1,0 +1,335 @@
+{
+  "name": "RAG",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6a627d7d-d939-4f68-8597-fdfa190960c9",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        -300
+      ],
+      "id": "d2994e94-7439-4564-be95-64b746e694b7",
+      "name": "Webhook",
+      "webhookId": "6a627d7d-d939-4f68-8597-fdfa190960c9"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "1. what is the name of the property, name of the developer and location?\n2. what are the key features and amenities with respect to property",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -420,
+        -300
+      ],
+      "id": "50fbc206-177c-4445-9bdf-d32d3c1734d4",
+      "name": "AI Agent",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "name": "property_options",
+        "description": "Key features of property and amenities available"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -80
+      ],
+      "id": "b64a502a-8439-4028-ba0a-ae1b19758eb2",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "luminous-sprouts",
+          "mode": "list",
+          "cachedResultName": "luminous-sprouts"
+        },
+        "options": {
+          "pineconeNamespace": "property_options"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        140
+      ],
+      "id": "e701f7b6-7ccd-4954-aa3e-caed16c79198",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "WtRhpbzpgHEvT2rY",
+          "name": "PineconeApi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a helpful assistant. Your task is:\n- Read the user requirement from \"{{ $json.body.question }}\"\n- Match the requirement against this mapping:\n  { \n    \"Residential property to invest\": 0, \n    \"Residential property for private/personal use\": 1, \n    \"Commercial properties\": 2 \n  }\n- Save only the corresponding number (0, 1, or 2) into a variable called use_case.\n\nPass this json as body param and call the tool:\n{\n  \"use_case\": number\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -760,
+        -300
+      ],
+      "id": "9fc2ddbc-ade0-4179-b06a-40f2a3adfd1d",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -860,
+        -80
+      ],
+      "id": "39352a5c-6bfb-443e-b28c-8f5abb53b90c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ET2TSLemQi7x5gUF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Insert data into pinecone namespace",
+        "method": "POST",
+        "url": "https://mjon23.app.n8n.cloud/webhook-test/5e867a26-cf0e-44f2-9963-63f91333d153",
+        "sendBody": true,
+        "parametersBody": {
+          "values": [
+            {
+              "name": "use_case"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        -640,
+        -40
+      ],
+      "id": "fb8008ad-f9e6-48f3-8ecf-ecec2ff4ec3c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -80
+      ],
+      "id": "c97b3bbb-0edd-47f1-928d-5c94e900a0cc",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ET2TSLemQi7x5gUF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -60,
+        -300
+      ],
+      "id": "2df19763-a67d-40e0-b518-b2126cbc9c2b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        140
+      ],
+      "id": "2f97ac55-30d0-4f5c-9cf5-87f158033ceb",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ET2TSLemQi7x5gUF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/text-embedding-004"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        320
+      ],
+      "id": "a195edcc-586b-4812-8233-a601f6322260",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ET2TSLemQi7x5gUF",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5bf915d7-31c6-4ddb-9e0f-541cdf6d4963",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "444857617713ce59bbc6fff8c8cb0888186d96f66f9637e34f90994f4bd19778"
+  },
+  "id": "BhIFYTZJvUWx3BHO",
+  "tags": []
+}
