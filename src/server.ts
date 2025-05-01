@@ -10,18 +10,18 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-config(); // Load env vars
+config(); // Load env variables
 
 const fastify = Fastify({ logger: true });
 
-// 🔥 Serve static files from /public
+// Serve static files from /public
 await fastify.register(fastifyStatic, {
   root: path.join(__dirname, 'public'),
-  prefix: '/', // means /index.html will be available at /
+  prefix: '/', 
 });
 
 await fastify.register(cors, {
-  origin: '*', // tighten in production
+  origin: '*', // tighten in production env
 });
 
 const client = new ElevenLabsClient({
