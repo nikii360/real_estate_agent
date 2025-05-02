@@ -53,9 +53,9 @@ This project is a **conversational AI agent** built to help users explore real e
 
 ## 📁 Folder Structure
 
-Import N8N Workflows json files -> /N8N/ (Untracked files for now).
-Static FE files -> /src/public/
-Call elevenlabs agent via twilio outbound call api -> /src/server.ts
+1. Import N8N Workflows json files -> /N8N/ (Untracked files for now).
+2. Static FE files -> /src/public/
+3. Call elevenlabs agent via twilio outbound call api -> /src/server.ts
 
 ## 🚀 Getting Started
 
