@@ -71,7 +71,8 @@ This project is a **conversational AI agent** built to help users explore real e
 
 ---
 
-Challenges 
+Challenges :- 
+
 Websocket method would have been ideal as shown in elevenlabs official documentation. 
 However, it did not support sending dynamic variables.
 
